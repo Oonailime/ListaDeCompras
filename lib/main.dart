@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     title: "Lista de compras",
     theme: ThemeData(
       brightness: Brightness.dark, 
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.red).copyWith(secondary: Colors.brown),
+      primarySwatch: Colors.red,
+      hintColor: Colors.brown,
     ),
     home: HomePage(),
   ));
