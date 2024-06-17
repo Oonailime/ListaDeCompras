@@ -34,8 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _compras.add('Produto 1');
-    _compras.add('Produto 2');
+    
   }
 
   @override
