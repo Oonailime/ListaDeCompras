@@ -1,79 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:lista_de_compras/app/features/main_list/main_list_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: "Lista de compras",
     theme: ThemeData(
-      brightness: Brightness.light,
+        brightness: Brightness.dark, 
+        
     ),
-    home: HomePage(),
+    home: const MainListView(),
   ));
-}
+} 
 
-class Produto {
-  double preco;
-  String nomeProduto;
-
-  Produto({this.nomeProduto = '', this.preco = 0.0});
-}
-double TotalPreco(List<Produto> produto, int tamanho){
-  double soma = 0;
-  for(int i = 0; i<tamanho;i++){
-    soma += produto[i].preco;
-  }
-  return soma;
-}
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
+  
+  
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Produto> _compras = [];
-  double _totalPreco = 0;
+  List<String> _compras = []; // Alteração na declaração da lista
+
+  String _input = "";
 
   @override
   void initState() {
     super.initState();
+    _loadCompras(); // Carrega os dados ao iniciar a tela
+  }
+
+  // Método para carregar os dados salvos
+  void _loadCompras() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _compras = prefs.getStringList('compras') ?? []; // Atribui diretamente à lista _compras
+    });
+  }
+
+  // Método para salvar os dados
+  void _saveCompras() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('compras', _compras); // Salva a lista _compras diretamente
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de compras'),
+        title: const Text('Lista de compras'),
         centerTitle: true,
       ),
-      
       body: ListView.builder(
         itemCount: _compras.length,
         itemBuilder: (BuildContext context, int index) {
           return Dismissible(
-            key: Key(_compras[index].nomeProduto),
+            key: Key(_compras[index]),
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               child: ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                  
-                    Text('${_compras[index].nomeProduto}'),
-                    Text('\$ ${_compras[index].preco.toStringAsFixed(2)}')
-
-                  ],
-                ),
+                title: Text(_compras[index]),
                 trailing: IconButton(
                   icon: Icon(Icons.delete),
                   color: Colors.red,
                   onPressed: () {
                     setState(() {
                       _compras.removeAt(index);
+                      _saveCompras(); // Salva os dados após remover um item
                     });
                   },
                 ),
@@ -87,60 +88,31 @@ class _HomePageState extends State<HomePage> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              Produto novoProduto = Produto(); // Criando um novo produto vazio
-
               return AlertDialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 title: Text("Adicione um produto"),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Digite o NOME do produto',
-                      ),
-                      onChanged: (String value) {
-                        novoProduto.nomeProduto = value; // Atualiza o nome do produto
-                      },
-                    ),
-                    SizedBox(height: 12),
-                    
-                    SizedBox(
-                      width: 140,
-                      child: TextField(
-                        decoration: InputDecoration(
-                          
-                          border: OutlineInputBorder(),
-                          hintText: 'Digite o PREÇO',
-                          
-                          
-                        ),
-                        
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
-                        onChanged: (String value) {
-                          
-                          novoProduto.preco = double.tryParse(value) ?? 0.0; // Atualiza o preço do produto
-                          
-                          
-                        },
-                      ),
-                    ),
-                  ],
+                content: TextField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Digite o nome do produto',
+                  ),
+                  onChanged: (String value) {
+                    _input = value;
+                  },
                 ),
                 actions: [
                   TextButton(
                     onPressed: () {
                       setState(() {
-                        _compras.add(novoProduto); // Adiciona o novo produto à lista
-                        _totalPreco = TotalPreco(_compras, _compras.length); // Atualiza o preço total da lista
+                        _compras.add(_input); // Adiciona o produto diretamente à lista _compras
+                        _saveCompras(); // Salva os dados após adicionar um item
                       });
                       Navigator.of(context).pop();
                     },
                     child: Text('Adicionar'),
-                  )
+                  ),
                 ],
               );
             },
@@ -148,37 +120,10 @@ class _HomePageState extends State<HomePage> {
         },
         child: Icon(
           Icons.add,
-          color: Colors.black,
-        ),
-        
-        
-      ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.all(16),
-        color: Colors.grey[800],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Total:',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'R\$ ${_totalPreco}',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+          color: Colors.white,
         ),
       ),
-    
     );
   }
 }
+
