@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -6,8 +7,6 @@ void main() {
     title: "Lista de compras",
     theme: ThemeData(
       brightness: Brightness.light,
-      
-
     ),
     home: HomePage(),
   ));
@@ -19,10 +18,11 @@ class Produto {
 
   Produto({this.nomeProduto = '', this.preco = 0.0});
 }
-double TotalPreco(List<Produto> produto, int tamanho){
+
+double TotalPreco(List<Produto> produtos) {
   double soma = 0;
-  for(int i = 0; i<tamanho;i++){
-    soma += produto[i].preco;
+  for (var produto in produtos) {
+    soma += produto.preco;
   }
   return soma;
 }
@@ -35,12 +35,43 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Produto> _compras = [];
+  List<Produto> _compras = [];
   double _totalPreco = 0;
 
   @override
   void initState() {
     super.initState();
+    _loadCompras(); // Carrega os dados ao iniciar a tela
+    
+  }
+
+  // Método para carregar os dados salvos
+  void _loadCompras() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? produtosSalvos = prefs.getStringList('compras');
+    if (produtosSalvos != null) {
+      setState(() {
+        _compras = produtosSalvos
+            .map((produtoString) {
+              List<String> dados = produtoString.split(':');
+              return Produto(
+                nomeProduto: dados[0],
+                preco: double.parse(dados[1]),
+              );
+            })
+            .toList();
+        _totalPreco = TotalPreco(_compras);
+      });
+    }
+  }
+
+  // Método para salvar os dados
+  void _saveCompras() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> produtosParaSalvar = _compras
+        .map((produto) => "${produto.nomeProduto}:${produto.preco.toString()}")
+        .toList();
+    await prefs.setStringList('compras', produtosParaSalvar);
   }
 
   @override
@@ -48,14 +79,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Color(0xFFd2f8d6),
       appBar: AppBar(
-      backgroundColor: Color(0xFF11e333),
-
-        title: const Text('Lista de compras',
-        style: TextStyle(color:Colors.white),
+        backgroundColor: Color(0xFF11e333),
+        title: const Text(
+          'Lista de compras',
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
       ),
-      
       body: ListView.builder(
         itemCount: _compras.length,
         itemBuilder: (BuildContext context, int index) {
@@ -69,10 +99,8 @@ class _HomePageState extends State<HomePage> {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                  
                     Text('${_compras[index].nomeProduto}'),
-                    Text('\$ ${_compras[index].preco.toStringAsFixed(2)}')
-
+                    Text('\$ ${_compras[index].preco.toStringAsFixed(2)}'),
                   ],
                 ),
                 trailing: IconButton(
@@ -81,6 +109,8 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {
                     setState(() {
                       _compras.removeAt(index);
+                      _totalPreco = TotalPreco(_compras);
+                      _saveCompras(); // Salva os dados após remover um item
                     });
                   },
                 ),
@@ -115,24 +145,18 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                     SizedBox(height: 12),
-                    
                     SizedBox(
                       width: 140,
                       child: TextField(
                         decoration: InputDecoration(
-                          
                           border: OutlineInputBorder(),
                           hintText: 'Digite o PREÇO',
-                          
-                          
                         ),
-                        
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
                         onChanged: (String value) {
-                          
-                          novoProduto.preco = double.tryParse(value) ?? 0.0; // Atualiza o preço do produto
-                          
-                          
+                          novoProduto.preco =
+                              double.tryParse(value) ?? 0.0; // Atualiza o preço do produto
                         },
                       ),
                     ),
@@ -140,11 +164,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 actions: [
                   TextButton(
-                    
                     onPressed: () {
                       setState(() {
                         _compras.add(novoProduto); // Adiciona o novo produto à lista
-                        _totalPreco = TotalPreco(_compras, _compras.length); // Atualiza o preço total da lista
+                        _totalPreco = TotalPreco(_compras); // Atualiza o preço total da lista
+                        _saveCompras(); // Salva os dados após adicionar um item
                       });
                       Navigator.of(context).pop();
                     },
@@ -156,14 +180,9 @@ class _HomePageState extends State<HomePage> {
           );
         },
         child: Icon(
-
           Icons.add,
           color: Colors.white,
-          
-
         ),
-        
-        
       ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.all(16),
@@ -180,7 +199,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Text(
-              'R\$ ${_totalPreco}',
+              'R\$ ${_totalPreco.toStringAsFixed(2)}',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -190,7 +209,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-    
     );
   }
 }
