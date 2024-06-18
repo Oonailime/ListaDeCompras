@@ -6,6 +6,8 @@ void main() {
     title: "Lista de compras",
     theme: ThemeData(
       brightness: Brightness.light,
+      
+
     ),
     home: HomePage(),
   ));
@@ -44,8 +46,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFd2f8d6),
       appBar: AppBar(
-        title: Text('Lista de compras'),
+      backgroundColor: Color(0xFF11e333),
+
+        title: const Text('Lista de compras',
+        style: TextStyle(color:Colors.white),
+        ),
         centerTitle: true,
       ),
       
@@ -83,6 +90,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xff11e333),
         onPressed: () {
           showDialog(
             context: context,
@@ -132,6 +140,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 actions: [
                   TextButton(
+                    
                     onPressed: () {
                       setState(() {
                         _compras.add(novoProduto); // Adiciona o novo produto à lista
@@ -147,8 +156,11 @@ class _HomePageState extends State<HomePage> {
           );
         },
         child: Icon(
+
           Icons.add,
-          color: Colors.black,
+          color: Colors.white,
+          
+
         ),
         
         
