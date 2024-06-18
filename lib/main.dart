@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('${_compras[index].nomeProduto}'),
-                    Text('\$ ${_compras[index].preco.toStringAsFixed(2)}'),
+                    Text('R\$ ${_compras[index].preco.toStringAsFixed(2)}'),
                   ],
                 ),
                 trailing: IconButton(
