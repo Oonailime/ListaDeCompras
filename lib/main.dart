@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Text('${_compras[index].nomeProduto}'),
                     Text('\$ ${_compras[index].preco.toStringAsFixed(2)}'),
-                    Text(' ${_compras[index].quantidade.toStringAsFixed(2)}'),
+                    Text(' ${_compras[index].quantidade.toStringAsFixed(0)}'),
                   ],
                 ),
                 trailing: IconButton(
@@ -139,6 +139,7 @@ class _HomePageState extends State<HomePage> {
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    SizedBox(height: 12),
                     TextField(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -164,6 +165,7 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                     ),
+                    SizedBox(height: 12),
                     SizedBox(
                       width: 200,
                       child: TextField(
