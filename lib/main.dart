@@ -15,14 +15,16 @@ void main() {
 class Produto {
   double preco;
   String nomeProduto;
+  int quantidade;
 
-  Produto({this.nomeProduto = '', this.preco = 0.0});
+  Produto({this.nomeProduto = '', this.preco = 0.0, this.quantidade = 0});
 }
 
 double TotalPreco(List<Produto> produtos) {
   double soma = 0;
+
   for (var produto in produtos) {
-    soma += produto.preco;
+    soma += produto.preco*produto.quantidade;
   }
   return soma;
 }
@@ -57,6 +59,7 @@ class _HomePageState extends State<HomePage> {
               return Produto(
                 nomeProduto: dados[0],
                 preco: double.parse(dados[1]),
+                quantidade: int.parse(dados[1])
               );
             })
             .toList();
@@ -69,7 +72,7 @@ class _HomePageState extends State<HomePage> {
   void _saveCompras() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> produtosParaSalvar = _compras
-        .map((produto) => "${produto.nomeProduto}:${produto.preco.toString()}")
+        .map((produto) => "${produto.nomeProduto}:${produto.preco.toString()}:${produto.quantidade.toString()}")
         .toList();
     await prefs.setStringList('compras', produtosParaSalvar);
   }
@@ -101,6 +104,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Text('${_compras[index].nomeProduto}'),
                     Text('\$ ${_compras[index].preco.toStringAsFixed(2)}'),
+                    Text(' ${_compras[index].quantidade.toStringAsFixed(2)}'),
                   ],
                 ),
                 trailing: IconButton(
@@ -146,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 12),
                     SizedBox(
-                      width: 140,
+                      width: 200,
                       child: TextField(
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -157,6 +161,20 @@ class _HomePageState extends State<HomePage> {
                         onChanged: (String value) {
                           novoProduto.preco =
                               double.tryParse(value) ?? 0.0; // Atualiza o preço do produto
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 200,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Digite a QUANTIDADE',
+                        ),
+                        
+                        onChanged: (String value) {
+                          novoProduto.quantidade =
+                              int.tryParse(value) ?? 0; // Atualiza o preço do produto
                         },
                       ),
                     ),
@@ -172,6 +190,7 @@ class _HomePageState extends State<HomePage> {
                       });
                       Navigator.of(context).pop();
                     },
+                    
                     child: Text('Adicionar'),
                   )
                 ],
