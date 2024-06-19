@@ -135,7 +135,7 @@ class _DropdownButtonWidgetState extends State<DropdownButtonWidget> {
   Widget build(BuildContext context) {
     return InputDecorator(
       decoration: InputDecoration(
-        labelText: 'Categoria',
+        labelText: 'Categorias',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         filled: true,
         fillColor: Colors.white,
