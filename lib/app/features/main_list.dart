@@ -1,5 +1,5 @@
-import 'package:app_lista_de_compras/app/features/items_list.dart';
 import 'package:flutter/material.dart';
+import 'package:lista_de_compras/app/features/items_list.dart';
 
 class MainListView extends StatefulWidget {
   const MainListView({super.key});
@@ -105,7 +105,7 @@ class _MainListViewState extends State<MainListView> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const HomePage()),
+                                  builder: (context) => HomePage()),
                             );
                           },
                         ),

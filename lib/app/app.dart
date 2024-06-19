@@ -1,5 +1,5 @@
-import 'package:app_lista_de_compras/app/features/list_page.dart';
 import 'package:flutter/material.dart';
+import 'package:lista_de_compras/app/features/list_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
