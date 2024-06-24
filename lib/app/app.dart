@@ -1,5 +1,5 @@
+import 'package:lista_de_compras/app/features/pages/splash.dart';
 import 'package:flutter/material.dart';
-import 'package:lista_de_compras/app/features/list_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -9,7 +9,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Lista de compras',
-        theme: ThemeData.light(),
-        home: ListaPage());
+        theme: ThemeData(
+         fontFamily: 'Roboto',
+        ),
+        home: const SplashView());
   }
+}
+
+void main() {
+  runApp(const MyApp());
 }
