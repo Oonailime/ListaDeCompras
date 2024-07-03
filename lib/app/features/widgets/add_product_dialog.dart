@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:app_lista_de_compras/app/features/model/produto.dart';
+import 'package:lista_de_compras/app/features/model/produto.dart';
 
 class AddProductDialog extends StatefulWidget {
   final void Function(Produto) onAddProduct;
