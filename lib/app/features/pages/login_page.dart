@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       backgroundColor: const Color(0xFFD2F8D6),
       body: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
