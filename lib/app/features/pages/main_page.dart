@@ -10,6 +10,7 @@ import 'package:lista_de_compras/app/features/widgets/add_user_in_list_dialog.da
 import 'package:uuid/uuid.dart';
 import 'package:lista_de_compras/app/features/pages/login_page.dart';
 import 'package:lista_de_compras/app/features/manager/notification_service.dart';
+// ignore: unused_import
 import 'package:lista_de_compras/app/features/manager/user_manager.dart';
 
 

@@ -53,14 +53,13 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCQBCK6Jw0Vt6Tn3cXoy52XCr-mQ8nYm8M',
-    appId: '1:635604688519:web:f95976c96ad5325e97e222',
-    messagingSenderId: '635604688519',
-    projectId: 'lista-de-compras-app-ad9fe',
-    authDomain: 'lista-de-compras-app-ad9fe.firebaseapp.com',
-    databaseURL: 'https://lista-de-compras-app-ad9fe-default-rtdb.firebaseio.com',
-    storageBucket: 'lista-de-compras-app-ad9fe.appspot.com',
-    measurementId: 'G-CJY82DC0EK',
+    apiKey: 'AIzaSyAPITnF9On6Q55zDheO5C36G2ZtkptF_BI',
+    appId: '1:212413751533:web:72c9b5ca9327854d22ece4',
+    messagingSenderId: '212413751533',
+    projectId: 'ibuy-bym',
+    authDomain: 'ibuy-bym.firebaseapp.com',
+    storageBucket: 'ibuy-bym.appspot.com',
+    measurementId: 'G-ZWQ4PQ1CE0',
   );
 
 }
