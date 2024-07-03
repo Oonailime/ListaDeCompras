@@ -1,16 +1,16 @@
-import 'package:app_lista_de_compras/app/features/pages/notification_page.dart';
+import 'package:lista_de_compras/app/features/pages/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:app_lista_de_compras/app/features/model/listadecompra.dart';
-import 'package:app_lista_de_compras/app/features/model/produto.dart';
-import 'package:app_lista_de_compras/app/features/pages/items_page.dart';
-import 'package:app_lista_de_compras/app/features/widgets/add_list_dialog.dart';
-import 'package:app_lista_de_compras/app/features/widgets/remove_list_dialog.dart';
-import 'package:app_lista_de_compras/app/features/widgets/add_user_in_list_dialog.dart';
+import 'package:lista_de_compras/app/features/model/listadecompra.dart';
+import 'package:lista_de_compras/app/features/model/produto.dart';
+import 'package:lista_de_compras/app/features/pages/items_page.dart';
+import 'package:lista_de_compras/app/features/widgets/add_list_dialog.dart';
+import 'package:lista_de_compras/app/features/widgets/remove_list_dialog.dart';
+import 'package:lista_de_compras/app/features/widgets/add_user_in_list_dialog.dart';
 import 'package:uuid/uuid.dart';
-import 'package:app_lista_de_compras/app/features/pages/login_page.dart';
-import 'package:app_lista_de_compras/app/features/manager/notification_service.dart';
-import 'package:app_lista_de_compras/app/features/manager/user_manager.dart';
+import 'package:lista_de_compras/app/features/pages/login_page.dart';
+import 'package:lista_de_compras/app/features/manager/notification_service.dart';
+import 'package:lista_de_compras/app/features/manager/user_manager.dart';
 
 
 class MainListView extends StatefulWidget {
