@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:app_lista_de_compras/app/features/model/usuario.dart';
+import 'package:lista_de_compras/app/features/model/usuario.dart';
 
 class UserManager {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
