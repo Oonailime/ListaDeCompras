@@ -1,6 +1,5 @@
-# App Lista de Compras
+# [iBuy](https://ibuy-bym.web.app/)
 
-[iBuy](https://ibuy-bym.web.app/)
 
 Este é um aplicativo simples e intuitivo para criar e gerenciar listas de compras. Com ele, você pode:
 
