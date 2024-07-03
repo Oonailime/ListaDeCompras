@@ -1,4 +1,4 @@
-import 'package:lista_de_compras/app/features/widgets/create_user_popup.dart';
+import 'package:app_lista_de_compras/app/features/widgets/create_user_popup.dart';
 import 'package:flutter/material.dart';
 import 'main_page.dart';
 import '../manager/user_manager.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lista_de_compras/app/features/model/produto.dart';
-import 'package:lista_de_compras/app/features/widgets/add_product_dialog.dart';
-import 'package:lista_de_compras/app/features/widgets/bottom_total_price.dart';
+import 'package:app_lista_de_compras/app/features/model/produto.dart';
+import 'package:app_lista_de_compras/app/features/widgets/add_product_dialog.dart';
+import 'package:app_lista_de_compras/app/features/widgets/bottom_total_price.dart';
 
 double totalPreco(List<Produto> produtos) {
   double soma = 0;
