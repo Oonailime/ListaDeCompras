@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:app_lista_de_compras/app/features/pages/login_page.dart';
-import 'package:app_lista_de_compras/app/features/pages/main_page.dart';
+import 'package:lista_de_compras/app/features/pages/login_page.dart';
+import 'package:lista_de_compras/app/features/pages/main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
