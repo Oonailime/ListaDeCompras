@@ -124,13 +124,13 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: _login,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF11E333),
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 50, vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                             ),
-                            child: Text(
+                            child: const Text(
                               'Entrar',
                               style: TextStyle(fontSize: 18, color: Colors.black),
                             ),
@@ -145,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               'Cadastre-se',
                               style: TextStyle(fontSize: 16, color: Colors.black87),
                             ),
@@ -165,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Container(
           height: 56.0,
           alignment: Alignment.center,
-          child: SingleChildScrollView(
+          child: const SingleChildScrollView(
             child: Column(
               children: [
                 SizedBox(height: 12),
