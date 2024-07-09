@@ -13,16 +13,16 @@ import 'package:lista_de_compras/app/features/manager/notification_service.dart'
 import 'package:lista_de_compras/app/features/manager/user_manager.dart';
 
 
-class MainListView extends StatefulWidget {
+class MainPageView extends StatefulWidget {
   final String username;
 
-  const MainListView({Key? key, required this.username}) : super(key: key);
+  const MainPageView({Key? key, required this.username}) : super(key: key);
 
   @override
-  State<MainListView> createState() => _MainListViewState();
+  State<MainPageView> createState() => _MainPageViewState();
 }
 
-class _MainListViewState extends State<MainListView> {
+class _MainPageViewState extends State<MainPageView> {
   final List<ListaDeCompra> _listasDeCompras = [];
   double _somaPrecoLista = 0.0;
   bool _isLoading = false;
@@ -413,7 +413,7 @@ void _showAddListDialog() {
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => ItemsList(
+                                          builder: (context) => ItemsPage(
                                             idLista: _listasDeCompras[index].id,
                                             nomeLista:
                                                 _listasDeCompras[index].nome,

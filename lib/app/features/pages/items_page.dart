@@ -12,14 +12,14 @@ double totalPreco(List<Produto> produtos) {
   return soma;
 }
 
-class ItemsList extends StatefulWidget {
+class ItemsPage extends StatefulWidget {
   final String idLista;
   final String nomeLista;
   final String precoLista;
   final double somaPrecoLista;
   final void Function(double) updateSomaPrecoLista;
 
-  const ItemsList({
+  const ItemsPage({
     super.key,
     required this.idLista,
     required this.nomeLista,
@@ -29,10 +29,10 @@ class ItemsList extends StatefulWidget {
   });
 
   @override
-  State<ItemsList> createState() => _ItemsListState();
+  State<ItemsPage> createState() => _ItemsPageState();
 }
 
-class _ItemsListState extends State<ItemsList> {
+class _ItemsPageState extends State<ItemsPage> {
   List<Produto> _compras = [];
   double _totalPreco = 0;
 

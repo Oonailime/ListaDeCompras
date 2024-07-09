@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       ),
       home: SplashView(
         nextPage: isLoggedIn && username != null
-            ? MainListView(username: username!)
+            ? MainPageView(username: username!)
             : LoginPage(),
       ),
     );
