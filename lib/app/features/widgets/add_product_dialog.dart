@@ -5,7 +5,9 @@ class AddProductDialog extends StatefulWidget {
   final void Function(Produto) onAddProduct;
   final Produto? initialProduto;
 
-  const AddProductDialog({Key? key, required this.onAddProduct, this.initialProduto}) : super(key: key);
+  const AddProductDialog(
+      {Key? key, required this.onAddProduct, this.initialProduto})
+      : super(key: key);
 
   @override
   AddProductDialogState createState() => AddProductDialogState();
@@ -27,7 +29,8 @@ class AddProductDialogState extends State<AddProductDialog> {
     // Initialize controllers
     _nomeController = TextEditingController(text: _produto.nomeProduto);
     _precoController = TextEditingController(text: _produto.preco.toString());
-    _quantidadeController = TextEditingController(text: _produto.quantidade.toString());
+    _quantidadeController =
+        TextEditingController(text: _produto.quantidade.toString());
     _categoriaController = TextEditingController(text: _produto.categoria);
   }
 
@@ -47,7 +50,9 @@ class AddProductDialogState extends State<AddProductDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      title: Text(widget.initialProduto == null ? "Adicione um produto" : "Edite o produto"),
+      title: Text(widget.initialProduto == null
+          ? "Adicione um produto"
+          : "Edite o produto"),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -78,12 +83,16 @@ class AddProductDialogState extends State<AddProductDialog> {
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Preço',
-                      labelStyle: TextStyle(fontSize: 12), 
-                       
+                      labelStyle: TextStyle(fontSize: 12),
                       hintText: 'Preço',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (String value) {
+                      _precoController.value = TextEditingValue(
+                        text: value.replaceAll(',', '.'),
+                        selection: _precoController.selection,
+                      );
                       _produto.preco = double.tryParse(value) ?? 0.0;
                     },
                   ),
@@ -94,12 +103,18 @@ class AddProductDialogState extends State<AddProductDialog> {
                     controller: _quantidadeController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Quantidade', 
-                      labelStyle: TextStyle(fontSize: 12), 
+                      labelText: 'Quantidade',
+                      labelStyle: TextStyle(fontSize: 12),
                       hintText: 'quantidade',
                     ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (String value) {
-                      _produto.quantidade = int.tryParse(value) ?? 1;
+                      _quantidadeController.value = TextEditingValue(
+                        text: value.replaceAll(',', '.'),
+                        selection: _quantidadeController.selection,
+                      );
+                      _produto.quantidade = double.tryParse(value) ?? 1.0;
                     },
                   ),
                 ),
