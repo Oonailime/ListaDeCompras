@@ -58,7 +58,8 @@ class _AddListDialogState extends State<AddListDialog> {
                   setState(() {
                     _errorText = 'O nome da lista não pode estar vazio';
                   });
-                } else {
+                } 
+                if(!(_textFieldController.text.isEmpty)) {
                   final String nomeLista = _textFieldController.text;
                   widget.onAdd(nomeLista);
                   Navigator.of(context).pop();
