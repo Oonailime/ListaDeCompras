@@ -99,6 +99,7 @@ void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<Lista
       id: id,
       nome: data['nome'] ?? 'Lista Sem Nome',
       preco: (data['preco'] ?? 0.0).toDouble(),
+      diaMesAno: data['diaMesAno']?? 'Lista Sem Data',
       produtos: produtosList,
     ));
   }
@@ -192,10 +193,12 @@ void _showAddListDialog() {
           onAdd: (newListName) async {
             try {
               String newId = _uuid.v4();
+              String newDiaMesAno = _formatDate(DateTime.now());
               ListaDeCompra newList = ListaDeCompra(
                 id: newId,
                 nome: newListName,
                 preco: 0.0,
+                diaMesAno: newDiaMesAno,
                 produtos: [],
               );
 
@@ -207,6 +210,7 @@ void _showAddListDialog() {
                 'nome': newListName,
                 'preco': 0.0,
                 'username': widget.username,
+                'diaMesAno' : newDiaMesAno,
                 'produtos': [],
               });
 
@@ -370,7 +374,7 @@ void _showAddListDialog() {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          _formatDate(DateTime.now()),
+                                          _listasDeCompras[index].diaMesAno,
                                           style: const TextStyle(
                                             color: Colors.black26,
                                             fontSize: 14,

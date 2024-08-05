@@ -5,6 +5,7 @@ class ListaDeCompra {
   String nome;
   double preco;
   List<Produto> produtos;
+  String diaMesAno;
   bool emGrupo; // Novo campo para indicar se a lista é em grupo
 
   ListaDeCompra({
@@ -12,6 +13,7 @@ class ListaDeCompra {
     required this.nome,
     required this.preco,
     required this.produtos,
+    required this.diaMesAno,
     this.emGrupo = false, // Valor padrão é false (individual)
   });
 
@@ -26,6 +28,7 @@ class ListaDeCompra {
       nome: json['nome'] as String,
       preco: (json['preco'] as num).toDouble(),
       produtos: produtos,
+      diaMesAno: json['diaMesAno'] as String,
       emGrupo: json['emGrupo'] as bool? ?? false, // Carrega o valor de emGrupo se existir
     );
   }
@@ -36,6 +39,7 @@ class ListaDeCompra {
       'nome': nome,
       'preco': preco,
       'produtos': produtos.map((produto) => produto.toJson()).toList(),
+      'diaMesAno': diaMesAno,
       'emGrupo': emGrupo, // Adiciona emGrupo ao JSON
     };
   }
