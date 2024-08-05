@@ -80,7 +80,6 @@ class _MainPageViewState extends State<MainPageView> {
       });
     }
   }
-
 void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<ListaDeCompra> loadedLists) {
     List<Produto> produtosList = [];
     if (data['produtos'] != null) {
@@ -127,6 +126,7 @@ void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<Lista
         'nome': item.nome,
         'preco': item.preco,
         'username': widget.username,
+        'diaMesAno': item.diaMesAno,
         'produtos': item.produtos
             .map((produto) => produto.toJson())
             .toList(), // Converte produtos para JSON
