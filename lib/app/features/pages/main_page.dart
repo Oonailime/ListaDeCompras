@@ -39,7 +39,7 @@ class _MainPageViewState extends State<MainPageView> {
 
   Future<void> _loadListasDeCompras() async {
     try {
-      print('Carregando listas para o usuário: ${widget.username}');
+      //'Carregando listas para o usuário: ${widget.username}'
       final userLists = await FirebaseFirestore.instance
           .collection('listas_de_compras')
           .where('username', isEqualTo: widget.username)
@@ -74,7 +74,7 @@ class _MainPageViewState extends State<MainPageView> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Erro ao carregar listas: $e');
+      //print('Erro ao carregar listas: $e');
       setState(() {
         _isLoading = false;
       });
@@ -150,7 +150,7 @@ void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<Lista
           .doc(id)
           .delete();
     } catch (e) {
-      print('Erro ao excluir lista: $e');
+      //print('Erro ao excluir lista: $e');
       // Se ocorrer um erro, reverta as alterações locais
       setState(() {
         _loadListasDeCompras(); // Recarrega as listas para restaurar o estado anterior
@@ -219,7 +219,7 @@ void _showAddListDialog() {
                 _updateSomaPrecoLista();
               });
             } catch (e) {
-              print('Erro ao adicionar lista: $e');
+              //print('Erro ao adicionar lista: $e');
             }
           },
         );
@@ -260,28 +260,28 @@ void _showAddListDialog() {
             fontSize: 32,
           ),
         ),
-        backgroundColor: Color.fromARGB(255, 88, 156, 95),
+        backgroundColor: const Color.fromARGB(255, 88, 156, 95),
         actions: [
           IconButton(
   icon: Stack(
     children: <Widget>[
-      Icon(Icons.notifications),
+      const Icon(Icons.notifications),
       if (NotificationService.unreadNotificationsCount > 0)
         Positioned(
           right: 0,
           child: Container(
-            padding: EdgeInsets.all(1),
+            padding: const EdgeInsets.all(1),
             decoration: BoxDecoration(
               color: Colors.red,
               borderRadius: BorderRadius.circular(6),
             ),
-            constraints: BoxConstraints(
+            constraints: const BoxConstraints(
               minWidth: 12,
               minHeight: 12,
             ),
             child: Text(
               '${NotificationService.unreadNotificationsCount}',
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 8,
               ),
@@ -295,7 +295,7 @@ void _showAddListDialog() {
     // Abrir uma nova tela com as notificações
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NotificationPage()),
+      MaterialPageRoute(builder: (context) => const NotificationPage()),
     );
   },
 ),
@@ -303,14 +303,14 @@ void _showAddListDialog() {
         ],
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
               child:
                   CircularProgressIndicator(), // Mostra um indicador de carregamento
             )
           : _currentIndex == 0
               ? UserProfile(username: widget.username)
               : _listasDeCompras.isEmpty
-                  ? Center(
+                  ? const Center(
                       child: Text(
                         "Crie suas listas de compras!",
                         style: TextStyle(fontSize: 24),
@@ -467,7 +467,7 @@ void _showAddListDialog() {
             _currentIndex = index;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Menu',
