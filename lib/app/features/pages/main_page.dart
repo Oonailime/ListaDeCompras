@@ -54,7 +54,7 @@ class _MainPageViewState extends State<MainPageView> {
       List<ListaDeCompra> loadedLists = [];
       for (var doc in userLists.docs) {
         final data = doc.data();
-        _addListaFromFirestoreData(doc.id, data, loadedLists);
+        _loadListaFromFirestoreData(doc.id, data, loadedLists);
       }
       for (var invite in sharedLists.docs) {
         final listaDoc = await FirebaseFirestore.instance
@@ -63,7 +63,7 @@ class _MainPageViewState extends State<MainPageView> {
             .get();
         final data = listaDoc.data();
         if (data != null) {
-          _addListaFromFirestoreData(invite['idLista'], data, loadedLists);
+          _loadListaFromFirestoreData(invite['idLista'], data, loadedLists);
         }
       }
 
@@ -80,8 +80,7 @@ class _MainPageViewState extends State<MainPageView> {
       });
     }
   }
-
-void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<ListaDeCompra> loadedLists) {
+void _loadListaFromFirestoreData(String id, Map<String, dynamic> data, List<ListaDeCompra> loadedLists) {
     List<Produto> produtosList = [];
     if (data['produtos'] != null) {
       produtosList = (data['produtos'] as List<dynamic>)
@@ -127,6 +126,7 @@ void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<Lista
         'nome': item.nome,
         'preco': item.preco,
         'username': widget.username,
+        'diaMesAno': item.diaMesAno,
         'produtos': item.produtos
             .map((produto) => produto.toJson())
             .toList(), // Converte produtos para JSON
