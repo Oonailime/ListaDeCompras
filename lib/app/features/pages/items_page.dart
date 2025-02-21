@@ -34,7 +34,7 @@ class ItemsList extends StatefulWidget {
 
 class _ItemsListState extends State<ItemsList> {
   List<Produto> _compras = [];
-  double _totalPreco = 0;
+  double _totalPreco = 0/1; // Por algum motivo estava _totalPreco estava virando inteiro na versão android quando não era dividido por 1 (0/1)
 
   @override
   void initState() {
@@ -57,10 +57,11 @@ class _ItemsListState extends State<ItemsList> {
         _compras = produtosList.map((produtoMap) {
           return Produto(
             nomeProduto: produtoMap['nomeProduto'],
-            preco: produtoMap['preco'],
-            quantidade: produtoMap['quantidade'],
+            preco: (produtoMap['preco'] as num).toDouble(),
+            quantidade: (produtoMap['quantidade'] as num).toDouble(),
             categoria: produtoMap['categoria'],
             isChecked: produtoMap['isChecked'],
+            
           );
         }).toList();
         _totalPreco = totalPreco(_compras);
@@ -173,9 +174,9 @@ class _ItemsListState extends State<ItemsList> {
                 ),
                 subtitle: Row(
                   children: [
-                    Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | "),
-                    Text("Quantidade: ${_compras[index].quantidade.toString()} | "),
-                    Text("Categoria: ${_compras[index].categoria}"),
+                    Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | ", style: TextStyle(fontSize: 10),),
+                    Text("Quantidade: ${_compras[index].quantidade.toString()} | ", style: TextStyle(fontSize: 10),),
+                    Text("Categoria: ${_compras[index].categoria}", style: TextStyle(fontSize: 10),),
                   ],
                 ),
                 trailing: Row(
