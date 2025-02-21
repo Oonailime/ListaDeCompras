@@ -64,6 +64,7 @@ class _LoginPageState extends State<LoginPage> {
         padding: EdgeInsets.all(0),
         child: Center(
           child: SingleChildScrollView(
+            reverse: true,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
