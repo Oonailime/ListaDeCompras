@@ -150,34 +150,44 @@ class _ItemsListState extends State<ItemsList> {
             ),
             child: Card(
               child: ListTile(
-                title: Row(
-                  children: [
-                    Checkbox(
-                      value: _compras[index].isChecked,
-                      activeColor: Colors.green,
-                      onChanged: (value) {
-                        setState(() {
-                          _compras[index].isChecked = value ?? false;
-                          _saveCompras();
-                        });
-                      },
-                    ),
-                    Text(
-                      _compras[index].nomeProduto,
-                      style: TextStyle(
-                        decoration: _compras[index].isChecked
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
+                title: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: _compras[index].isChecked,
+                        activeColor: Colors.green,
+                        onChanged: (value) {
+                          setState(() {
+                            _compras[index].isChecked = value ?? false;
+                            _saveCompras();
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                    SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                        child: Text(
+                          _compras[index].nomeProduto,
+                          style: TextStyle(
+                            decoration: _compras[index].isChecked
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                subtitle: Row(
-                  children: [
-                    Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | ", style: TextStyle(fontSize: 10),),
-                    Text("Quantidade: ${_compras[index].quantidade.toString()} | ", style: TextStyle(fontSize: 10),),
-                    Text("Categoria: ${_compras[index].categoria}", style: TextStyle(fontSize: 10),),
-                  ],
+                subtitle: 
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | ", style: TextStyle(fontSize: 10),),
+                      Text("Quantidade: ${_compras[index].quantidade.toString()} | ", style: TextStyle(fontSize: 10),),
+                      Text("Categoria: ${_compras[index].categoria}", style: TextStyle(fontSize: 10),),
+                    ],
+                  ),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
