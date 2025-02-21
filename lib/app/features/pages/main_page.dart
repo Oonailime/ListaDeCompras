@@ -497,8 +497,8 @@ class UserProfile extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Bem vindo, $username !'),
-          SizedBox(height: 10.0),
+          Text('Bem vindo, $username!'),
+          const SizedBox(height: 10.0),
           ElevatedButton(
             onPressed: () {
               // Implemente a lógica de logout aqui
@@ -508,7 +508,7 @@ class UserProfile extends StatelessWidget {
                 (Route<dynamic> route) => false,
               );
             },
-            child: Text('Sair'),
+            child: const Text('Sair'),
           ),
         ],
       ),
