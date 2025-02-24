@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Uuid _uuid = Uuid();
+ // final Uuid _uuid = Uuid();
 
   Future<List<ListaDeCompra>> loadListasDeCompras(String username) async {
     try {
