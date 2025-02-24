@@ -18,7 +18,12 @@ class _LoginPageState extends State<LoginPage> {
     String username = _usernameController.text;
     String password = _passwordController.text;
 
-    bool loggedIn = await UserManager.loginUser(username, password);
+    bool loggedIn = false;
+    if(username != "" && password != ""){
+       loggedIn = await UserManager.loginUser(username, password);
+    }
+
+    
 
     if (loggedIn) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -30,6 +35,26 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => MainPageView(username: username)),
       );
     } else {
+          if(username == "" || password == ""){
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Erro de Login'),
+            content: Text('Usuário ou senha em branco.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    else{
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -47,6 +72,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         },
       );
+    }
     }
   }
 
@@ -161,6 +187,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+      
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         child: Container(
