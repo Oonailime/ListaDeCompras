@@ -34,7 +34,7 @@ class ItemsList extends StatefulWidget {
 
 class _ItemsListState extends State<ItemsList> {
   List<Produto> _compras = [];
-  double _totalPreco = 0;
+  double _totalPreco = 0/1; // Por algum motivo estava _totalPreco estava virando inteiro na versão android quando não era dividido por 1 (0/1)
 
   @override
   void initState() {
@@ -57,10 +57,11 @@ class _ItemsListState extends State<ItemsList> {
         _compras = produtosList.map((produtoMap) {
           return Produto(
             nomeProduto: produtoMap['nomeProduto'],
-            preco: produtoMap['preco'],
-            quantidade: produtoMap['quantidade'],
+            preco: (produtoMap['preco'] as num).toDouble(),
+            quantidade: (produtoMap['quantidade'] as num).toDouble(),
             categoria: produtoMap['categoria'],
             isChecked: produtoMap['isChecked'],
+            
           );
         }).toList();
         _totalPreco = totalPreco(_compras);
@@ -149,34 +150,44 @@ class _ItemsListState extends State<ItemsList> {
             ),
             child: Card(
               child: ListTile(
-                title: Row(
-                  children: [
-                    Checkbox(
-                      value: _compras[index].isChecked,
-                      activeColor: Colors.green,
-                      onChanged: (value) {
-                        setState(() {
-                          _compras[index].isChecked = value ?? false;
-                          _saveCompras();
-                        });
-                      },
-                    ),
-                    Text(
-                      _compras[index].nomeProduto,
-                      style: TextStyle(
-                        decoration: _compras[index].isChecked
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
+                title: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: _compras[index].isChecked,
+                        activeColor: Colors.green,
+                        onChanged: (value) {
+                          setState(() {
+                            _compras[index].isChecked = value ?? false;
+                            _saveCompras();
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                    SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                        child: Text(
+                          _compras[index].nomeProduto,
+                          style: TextStyle(
+                            decoration: _compras[index].isChecked
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                subtitle: Row(
-                  children: [
-                    Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | "),
-                    Text("Quantidade: ${_compras[index].quantidade.toString()} | "),
-                    Text("Categoria: ${_compras[index].categoria}"),
-                  ],
+                subtitle: 
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | ", style: TextStyle(fontSize: 10),),
+                      Text("Quantidade: ${_compras[index].quantidade.toString()} | ", style: TextStyle(fontSize: 10),),
+                      Text("Categoria: ${_compras[index].categoria}", style: TextStyle(fontSize: 10),),
+                    ],
+                  ),
                 ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
