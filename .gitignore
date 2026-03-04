@@ -41,3 +41,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+.firebase/hosting.LmZpcmViYXNlXGlidXktYnltXGhvc3Rpbmc.cache
+.firebase/ibuy-bym/hosting/flutter_bootstrap.js
+.firebase/ibuy-bym/hosting/flutter_service_worker.js
+.firebase/ibuy-bym/hosting/main.dart.js
+macos/Flutter/ephemeral/Flutter-Generated.xcconfig
+macos/Flutter/ephemeral/flutter_export_environment.sh
