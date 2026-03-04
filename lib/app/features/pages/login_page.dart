@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: TextField(
                               controller: _emailController,
                               decoration: const InputDecoration(
-                                labelText: 'Email ou usuário antigo',
+                                labelText: 'Email',
                                 border: OutlineInputBorder(),
                                 prefixIcon: Icon(Icons.email),
                               ),

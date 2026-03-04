@@ -7,7 +7,6 @@ import 'package:lista_de_compras/app/features/model/produto.dart';
 import 'package:lista_de_compras/app/features/pages/items_page.dart';
 import 'package:lista_de_compras/app/features/widgets/add_list_dialog.dart';
 import 'package:lista_de_compras/app/features/widgets/remove_list_dialog.dart';
-import 'package:lista_de_compras/app/features/widgets/add_user_in_list_dialog.dart';
 import 'package:uuid/uuid.dart';
 import 'package:lista_de_compras/app/features/pages/login_page.dart';
 import 'package:lista_de_compras/app/features/manager/notification_service.dart';
