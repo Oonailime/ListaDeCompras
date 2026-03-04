@@ -5,7 +5,7 @@ class AddListDialog extends StatefulWidget {
   final String dialogTitle;
   final String initialText;
 
-  AddListDialog({
+  const AddListDialog({
     super.key,
     required this.onAdd,
     this.dialogTitle = 'Adicionar Nova Lista',

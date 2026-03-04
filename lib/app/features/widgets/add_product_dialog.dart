@@ -6,8 +6,7 @@ class AddProductDialog extends StatefulWidget {
   final Produto? initialProduto;
 
   const AddProductDialog(
-      {Key? key, required this.onAddProduct, this.initialProduto})
-      : super(key: key);
+      {super.key, required this.onAddProduct, this.initialProduto});
 
   @override
   AddProductDialogState createState() => AddProductDialogState();

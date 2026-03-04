@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class RemoveListDialog extends StatefulWidget {
   final String listName;
 
-  const RemoveListDialog({
+  const RemoveListDialog({super.key, 
     required this.listName,
   });
 
@@ -17,18 +17,18 @@ class _RemoveListDialogState extends State<RemoveListDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Confirmar Exclusão'),
+      title: const Text('Confirmar Exclusão'),
       content:
           Text('Tem certeza que deseja excluir a lista "${widget.listName}"?'),
       actions: <Widget>[
         TextButton(
-          child: Text('Cancelar'),
+          child: const Text('Cancelar'),
           onPressed: () {
             Navigator.of(context).pop(); 
           },
         ),
         TextButton(
-          child: Text('Excluir'),
+          child: const Text('Excluir'),
           onPressed: () {
             Navigator.of(context).pop(true); 
           },

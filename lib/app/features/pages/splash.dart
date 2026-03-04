@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SplashView extends StatefulWidget {
   final Widget nextPage;
 
-  const SplashView({Key? key, required this.nextPage}) : super(key: key);
+  const SplashView({super.key, required this.nextPage});
 
   @override
   State<SplashView> createState() => _SplashViewState();

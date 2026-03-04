@@ -1,23 +1,22 @@
 import 'package:lista_de_compras/app/features/pages/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lista_de_compras/app/features/model/listadecompra.dart';
 import 'package:lista_de_compras/app/features/model/produto.dart';
 import 'package:lista_de_compras/app/features/pages/items_page.dart';
 import 'package:lista_de_compras/app/features/widgets/add_list_dialog.dart';
 import 'package:lista_de_compras/app/features/widgets/remove_list_dialog.dart';
-import 'package:lista_de_compras/app/features/widgets/add_user_in_list_dialog.dart';
 import 'package:uuid/uuid.dart';
 import 'package:lista_de_compras/app/features/pages/login_page.dart';
 import 'package:lista_de_compras/app/features/manager/notification_service.dart';
-// ignore: unused_import
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lista_de_compras/app/features/manager/user_manager.dart';
-
 
 class MainPageView extends StatefulWidget {
   final String username;
 
-  const MainPageView({Key? key, required this.username}) : super(key: key);
+  const MainPageView({super.key, required this.username});
 
   @override
   State<MainPageView> createState() => _MainPageViewState();
@@ -28,7 +27,9 @@ class _MainPageViewState extends State<MainPageView> {
   double _somaPrecoLista = 0.0;
   bool _isLoading = false;
   final Uuid _uuid = const Uuid();
-  int _currentIndex = 1; 
+  int _currentIndex = 1;
+
+  final String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
@@ -39,32 +40,16 @@ class _MainPageViewState extends State<MainPageView> {
 
   Future<void> _loadListasDeCompras() async {
     try {
-      //'Carregando listas para o usuário: ${widget.username}'
       final userLists = await FirebaseFirestore.instance
           .collection('listas_de_compras')
-          .where('username', isEqualTo: widget.username)
-          .get();
-
-      final sharedLists = await FirebaseFirestore.instance
-          .collection('convites_pendentes')
-          .where('toUsername', isEqualTo: widget.username)
-          .where('status', isEqualTo: 'aceito')
+          .where('ownerUid', isEqualTo: uid)
           .get();
 
       List<ListaDeCompra> loadedLists = [];
+
       for (var doc in userLists.docs) {
         final data = doc.data();
         _addListaFromFirestoreData(doc.id, data, loadedLists);
-      }
-      for (var invite in sharedLists.docs) {
-        final listaDoc = await FirebaseFirestore.instance
-            .collection('listas_de_compras')
-            .doc(invite['idLista'])
-            .get();
-        final data = listaDoc.data();
-        if (data != null) {
-          _addListaFromFirestoreData(invite['idLista'], data, loadedLists);
-        }
       }
 
       setState(() {
@@ -74,14 +59,16 @@ class _MainPageViewState extends State<MainPageView> {
         _isLoading = false;
       });
     } catch (e) {
-      //print('Erro ao carregar listas: $e');
       setState(() {
         _isLoading = false;
       });
     }
   }
-void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<ListaDeCompra> loadedLists) {
+
+  void _addListaFromFirestoreData(
+      String id, Map<String, dynamic> data, List<ListaDeCompra> loadedLists) {
     List<Produto> produtosList = [];
+
     if (data['produtos'] != null) {
       produtosList = (data['produtos'] as List<dynamic>)
           .map((item) => Produto(
@@ -98,20 +85,34 @@ void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<Lista
       id: id,
       nome: data['nome'] ?? 'Lista Sem Nome',
       preco: (data['preco'] ?? 0.0).toDouble(),
-      diaMesAno: data['diaMesAno']?? 'Lista Sem Data',
+      diaMesAno: data['diaMesAno'] ?? 'Lista Sem Data',
       produtos: produtosList,
     ));
   }
-
 
   void _updateSomaPrecoLista() {
     double total = 0;
     for (var lista in _listasDeCompras) {
       total += lista.preco;
     }
+
     setState(() {
       _somaPrecoLista = total;
     });
+  }
+
+  Future<void> _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn');
+    await prefs.remove('username');
+    await UserManager.signOut();
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
   }
 
   Future<void> _saveListasDeCompras() async {
@@ -125,11 +126,9 @@ void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<Lista
       batch.set(docRef, {
         'nome': item.nome,
         'preco': item.preco,
-        'username': widget.username,
+        'ownerUid': uid,
         'diaMesAno': item.diaMesAno,
-        'produtos': item.produtos
-            .map((produto) => produto.toJson())
-            .toList(), // Converte produtos para JSON
+        'produtos': item.produtos.map((produto) => produto.toJson()).toList(),
       });
     }
 
@@ -138,54 +137,23 @@ void _addListaFromFirestoreData(String id, Map<String, dynamic> data, List<Lista
 
   void _deleteLista(String id) async {
     try {
-      // Remove localmente
       setState(() {
         _listasDeCompras.removeWhere((lista) => lista.id == id);
         _updateSomaPrecoLista();
       });
 
-      // Remove no Firestore
       await FirebaseFirestore.instance
           .collection('listas_de_compras')
           .doc(id)
           .delete();
     } catch (e) {
-      //print('Erro ao excluir lista: $e');
-      // Se ocorrer um erro, reverta as alterações locais
       setState(() {
-        _loadListasDeCompras(); // Recarrega as listas para restaurar o estado anterior
+        _loadListasDeCompras();
       });
     }
   }
 
-  void _showAddUserInListDialog() {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AddUserInListDialog(
-        onAdd: (username) async {
-          try {
-            await FirebaseFirestore.instance.collection('convites_pendentes').add({
-              'fromUsername': widget.username,
-              'toUsername': username,
-              'idLista': _uuid.v4(), // ou use o ID da lista real
-              'status': 'pendente',
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Convite enviado para $username')),
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erro ao enviar convite: $e')),
-            );
-          }
-        },
-      );
-    },
-  );
-}
-
-void _showAddListDialog() {
+  void _showAddListDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -194,6 +162,7 @@ void _showAddListDialog() {
             try {
               String newId = _uuid.v4();
               String newDiaMesAno = _formatDate(DateTime.now());
+
               ListaDeCompra newList = ListaDeCompra(
                 id: newId,
                 nome: newListName,
@@ -202,15 +171,14 @@ void _showAddListDialog() {
                 produtos: [],
               );
 
-              // Adiciona a nova lista ao Firestore
               await FirebaseFirestore.instance
                   .collection('listas_de_compras')
                   .doc(newId)
                   .set({
                 'nome': newListName,
                 'preco': 0.0,
-                'username': widget.username,
-                'diaMesAno' : newDiaMesAno,
+                'ownerUid': uid,
+                'diaMesAno': newDiaMesAno,
                 'produtos': [],
               });
 
@@ -218,16 +186,12 @@ void _showAddListDialog() {
                 _listasDeCompras.add(newList);
                 _updateSomaPrecoLista();
               });
-            } catch (e) {
-              //print('Erro ao adicionar lista: $e');
-            }
+            } catch (e) {}
           },
         );
       },
     );
   }
-
-
 
   void _showEditListDialog(int index) {
     showDialog(
@@ -263,50 +227,51 @@ void _showAddListDialog() {
         backgroundColor: const Color.fromARGB(255, 88, 156, 95),
         actions: [
           IconButton(
-  icon: Stack(
-    children: <Widget>[
-      const Icon(Icons.notifications),
-      if (NotificationService.unreadNotificationsCount > 0)
-        Positioned(
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.all(1),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(6),
+            icon: Stack(
+              children: <Widget>[
+                const Icon(Icons.notifications),
+                if (NotificationService.unreadNotificationsCount > 0)
+                  Positioned(
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                      child: Text(
+                        '${NotificationService.unreadNotificationsCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+              ],
             ),
-            constraints: const BoxConstraints(
-              minWidth: 12,
-              minHeight: 12,
-            ),
-            child: Text(
-              '${NotificationService.unreadNotificationsCount}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 8,
-              ),
-              textAlign: TextAlign.center,
-            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotificationPage()),
+              );
+            },
           ),
-        )
-    ],
-  ),
-  onPressed: () {
-    // Abrir uma nova tela com as notificações
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const NotificationPage()),
-    );
-  },
-),
-
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sair',
+            onPressed: _logout,
+          ),
         ],
       ),
       body: _isLoading
-          ? const Center(
-              child:
-                  CircularProgressIndicator(), // Mostra um indicador de carregamento
-            )
+          ? const Center(child: CircularProgressIndicator())
           : _currentIndex == 0
               ? UserProfile(username: widget.username)
               : _listasDeCompras.isEmpty
@@ -321,9 +286,7 @@ void _showAddListDialog() {
                       itemBuilder: (context, index) {
                         return Column(
                           children: [
-                            const SizedBox(
-                              height: 30,
-                            ),
+                            const SizedBox(height: 30),
                             Center(
                               key: Key(_listasDeCompras[index].id),
                               child: FractionallySizedBox(
@@ -335,7 +298,6 @@ void _showAddListDialog() {
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 0,
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -343,31 +305,19 @@ void _showAddListDialog() {
                                   ),
                                   child: ListTile(
                                     leading: IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        size: 30,
-                                      ),
+                                      icon: const Icon(Icons.edit, size: 30),
                                       onPressed: () {
                                         _showEditListDialog(index);
                                       },
                                     ),
-                                    title: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            _listasDeCompras[index].nome.isEmpty
-                                                ? "Lista ${index + 1}"
-                                                : _listasDeCompras[index].nome,
-                                            style: const TextStyle(
-                                              color: Colors.black87,
-                                              fontSize: 32,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                    title: Text(
+                                      _listasDeCompras[index].nome.isEmpty
+                                          ? "Lista ${index + 1}"
+                                          : _listasDeCompras[index].nome,
+                                      style: const TextStyle(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     subtitle: Column(
                                       crossAxisAlignment:
@@ -383,10 +333,7 @@ void _showAddListDialog() {
                                         const Divider(),
                                         Text(
                                           '\$ ${_listasDeCompras[index].preco.toStringAsFixed(2)}',
-                                          style: const TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: 18,
-                                          ),
+                                          style: const TextStyle(fontSize: 18),
                                         ),
                                       ],
                                     ),
@@ -407,7 +354,6 @@ void _showAddListDialog() {
                                           },
                                         ).then((value) {
                                           if (value != null && value) {
-                                            // Verifica se a exclusão foi confirmada
                                             _deleteLista(
                                                 _listasDeCompras[index].id);
                                           }
@@ -438,6 +384,7 @@ void _showAddListDialog() {
                                           ),
                                         ),
                                       );
+
                                       _updateSomaPrecoLista();
                                     },
                                   ),
@@ -453,13 +400,9 @@ void _showAddListDialog() {
               backgroundColor: const Color(0xFF11E333),
               shape: const CircleBorder(),
               onPressed: _showAddListDialog,
-              child: const Icon(
-                Icons.add,
-                size: 40,
-                color: Colors.white,
-              ),
+              child: const Icon(Icons.add, size: 40, color: Colors.white),
             )
-          : null, // Adicionado para mostrar apenas na aba de listas
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -468,14 +411,9 @@ void _showAddListDialog() {
           });
         },
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Menu'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Menu',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Listas',
-          ),
+              icon: Icon(Icons.shopping_cart), label: 'Listas'),
         ],
       ),
     );
@@ -489,7 +427,7 @@ void _showAddListDialog() {
 class UserProfile extends StatelessWidget {
   final String username;
 
-  UserProfile({required this.username});
+  const UserProfile({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -501,7 +439,6 @@ class UserProfile extends StatelessWidget {
           const SizedBox(height: 10.0),
           ElevatedButton(
             onPressed: () {
-              // Implemente a lógica de logout aqui
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => LoginPage()),
