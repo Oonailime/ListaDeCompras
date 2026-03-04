@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Caminho de documentos de usuário é /users/{uid}
+    // O documento contém {username, uid, email, ...}
+    match /users/{uid} {
+      allow create: if request.auth.uid == uid 
+                       && request.resource.data.uid == request.auth.uid;
+      allow read, update: if request.auth.uid == uid;
+      allow delete: if false;  // nunca excluir via cliente
+    }
+
+    // Listas de compras - vinculadas ao username do usuário autenticado
+    match /listas_de_compras/{listaId} {
+      allow read, write: if isSignedIn()
+        && (
+             resource.data.username == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+             || resource.data.username == ''  // permite criar sem username atribuído ainda
+             || exists(/databases/$(database)/documents/convites_pendentes/$(listaId + '_' + get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username))
+           );
+    }
+
+    // Convites pendentes
+    match /convites_pendentes/{inviteId} {
+      allow read, write: if isSignedIn()
+        && (
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username == resource.data.fromUsername
+             || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username == resource.data.toUsername
+           );
+    }
+
+    // Produtos salvos
+    match /produtos_salvar/{listaId} {
+      allow read, write: if isSignedIn()
+        && get(/databases/$(database)/documents/listas_de_compras/$(listaId)).data.username
+             == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
+    }
+
+    // Nega tudo o mais
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

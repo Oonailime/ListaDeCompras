@@ -51,7 +51,7 @@ class _ItemsListState extends State<ItemsList> {
 
     if (docSnapshot.exists) {
       final data = docSnapshot.data() as Map<String, dynamic>;
-      final produtosList = data['produtos'] as List<dynamic>;
+      final produtosList = (data['produtos'] ?? []) as List<dynamic>;
 
       setState(() {
         _compras = produtosList.map((produtoMap) {
@@ -70,6 +70,7 @@ class _ItemsListState extends State<ItemsList> {
   }
 
   void _saveCompras() async {
+    
     final produtosParaSalvar = _compras.map((produto) {
       return {
         'nomeProduto': produto.nomeProduto,
@@ -81,11 +82,12 @@ class _ItemsListState extends State<ItemsList> {
     }).toList();
 
     await FirebaseFirestore.instance
-        .collection('produtos_salvar')
-        .doc(widget.idLista)
-        .set({
-          'produtos': produtosParaSalvar,
-        });
+    .collection('produtos_salvar')
+    .doc(widget.idLista)
+    .set({
+      'idLista': widget.idLista,
+      'produtos': produtosParaSalvar,
+    });
   }
 
   void _removeProduto(int index) {
@@ -183,9 +185,9 @@ class _ItemsListState extends State<ItemsList> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | ", style: TextStyle(fontSize: 10),),
-                      Text("Quantidade: ${_compras[index].quantidade.toString()} | ", style: TextStyle(fontSize: 10),),
-                      Text("Categoria: ${_compras[index].categoria}", style: TextStyle(fontSize: 10),),
+                      Text("Preço: \$${_compras[index].preco.toStringAsFixed(2)} | ", style: const TextStyle(fontSize: 10),),
+                      Text("Quantidade: ${_compras[index].quantidade.toString()} | ", style: const TextStyle(fontSize: 10),),
+                      Text("Categoria: ${_compras[index].categoria}", style: const TextStyle(fontSize: 10),),
                     ],
                   ),
                 ),

@@ -3,7 +3,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lista_de_compras/app/features/model/listadecompra.dart';
 import 'package:lista_de_compras/app/features/model/produto.dart';
-import 'package:uuid/uuid.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

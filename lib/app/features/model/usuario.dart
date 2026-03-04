@@ -1,12 +1,14 @@
 class Usuario {
   String username;
-  String password;
+  String uid; // uid do Firebase Auth
+  String passwordHash; // usado apenas para migração de contas antigas
   List<String> listasDeCompras; 
   List<String> convitesPendentes; 
 
   Usuario({
     required this.username,
-    required this.password,
+    required this.uid,
+    required this.passwordHash,
     this.listasDeCompras = const [],
     this.convitesPendentes = const [], 
   });
@@ -15,8 +17,10 @@ class Usuario {
   Map<String, dynamic> toJson() {
     return {
       'username': username,
-      'password': password,
+      'uid': uid,
+      'passwordHash': passwordHash,
       'listasDeCompras': listasDeCompras,
+      'convitesPendentes': convitesPendentes,
     };
   }
 
@@ -24,8 +28,10 @@ class Usuario {
   factory Usuario.fromJson(Map<String, dynamic> json) {
     return Usuario(
       username: json['username'],
-      password: json['password'],
+      uid: json['uid'] ?? '',
+      passwordHash: json['passwordHash'] ?? '',
       listasDeCompras: List<String>.from(json['listasDeCompras'] ?? []),
+      convitesPendentes: List<String>.from(json['convitesPendentes'] ?? []),
     );
   }
 }

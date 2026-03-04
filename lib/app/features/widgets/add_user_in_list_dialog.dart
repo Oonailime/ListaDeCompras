@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 class AddUserInListDialog extends StatelessWidget {
   final Function(String) onAdd;
 
-  const AddUserInListDialog({Key? key, required this.onAdd}) : super(key: key);
+  const AddUserInListDialog({super.key, required this.onAdd});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Adicionar Usuário à Lista'),
+      title: const Text('Adicionar Usuário à Lista'),
       content: TextField(
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: 'Nome do usuário',
         ),
         onChanged: (value) {
@@ -19,13 +19,13 @@ class AddUserInListDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('Cancelar'),
+          child: const Text('Cancelar'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text('Adicionar'),
+          child: const Text('Adicionar'),
           onPressed: () {
             // Implemente lógica para adicionar o usuário à lista
             onAdd('Usuário adicionado'); // Exemplo simples, passando o nome do usuário

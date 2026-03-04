@@ -1,32 +1,93 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lista_de_compras/app/features/model/usuario.dart';
+// bcrypt import kept for legacy migration verification
+import 'package:bcrypt/bcrypt.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserManager {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _collection = 'users';
 
-  // Método para registrar um novo usuário
-  static Future<void> registerUser(Usuario user) async {
-    await _firestore.collection(_collection).doc(user.username).set(user.toJson());
-  }
-
-  // Método para verificar se as credenciais de login estão corretas
-  static Future<bool> loginUser(String username, String password) async {
-    DocumentSnapshot doc = await _firestore.collection(_collection).doc(username).get();
-    if (doc.exists) {
-      Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
-      return userData['password'] == password;
+  static Future<void> registerUser(String email, String username, String plainPassword) async {
+    try {
+      UserCredential cred = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: plainPassword);
+      String uid = cred.user?.uid ?? '';
+      Usuario user = Usuario(
+        username: username,
+        uid: uid,
+        passwordHash: '',
+      );
+      // Guardar em /users/{uid} não em /users/{username}
+      await _firestore.collection(_collection).doc(uid).set(user.toJson());
+    } on FirebaseAuthException catch (authError) {
+      throw Exception('Auth error (${authError.code}): ${authError.message}');
     }
-    return false;
   }
 
-  // Método para obter informações de um usuário
-  static Future<Usuario?> getUser(String username) async {
-    DocumentSnapshot doc = await _firestore.collection(_collection).doc(username).get();
-    if (doc.exists) {
-      return Usuario.fromJson(doc.data() as Map<String, dynamic>);
+  // Efetua login. Se o identificador contém '@', trata como email; caso
+  // contrário, tenta rota legada com nome de usuário e hash (deprecated).
+  // Retorna o nome de usuário associado ou null em caso de falha.
+  static Future<String?> loginUser(String emailOrUsername, String plainPassword) async {
+    if (emailOrUsername.contains('@')) {
+      try {
+        UserCredential cred = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: emailOrUsername, password: plainPassword);
+        String? uid = cred.user?.uid;
+        if (uid == null) return null;
+        DocumentSnapshot doc = await _firestore.collection(_collection).doc(uid).get();
+        if (doc.exists) {
+          return (doc.data() as Map<String, dynamic>)['username'] as String?;
+        }
+        return null;
+      } on FirebaseAuthException catch (e) {
+        throw Exception('Auth error (${e.code}): ${e.message}');
+      }
+    }
+
+    // legacy path using username
+    String username = emailOrUsername;
+    final query = await _firestore
+        .collection(_collection)
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+    if (query.docs.isNotEmpty) {
+      DocumentSnapshot doc = query.docs.first;
+      Map<String, dynamic> userData = doc.data() as Map<String, dynamic>;
+      String storedHash = userData['passwordHash'] ?? '';
+      if (storedHash.isNotEmpty && BCrypt.checkpw(plainPassword, storedHash)) {
+        // migrar: create auth account com email sintético
+        final String email = '$username@local';
+        UserCredential newCred = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: plainPassword);
+        String newUid = newCred.user?.uid ?? '';
+        await doc.reference.update({
+          'uid': newUid,
+          'passwordHash': FieldValue.delete(),
+        });
+        return username;
+      }
     }
     return null;
+  }
+
+  // legado: buscar por username em /users/{uid} usando query
+  static Future<Usuario?> getUserByUsername(String username) async {
+    final query = await _firestore
+        .collection(_collection)
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+    if (query.docs.isNotEmpty) {
+      return Usuario.fromJson(query.docs.first.data() as Map<String, dynamic>);
+    }
+    return null;
+  }
+
+  // encerra sessão no FirebaseAuth
+  static Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 
   // Método para adicionar uma nova lista de compras ao usuário
